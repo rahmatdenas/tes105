@@ -163,9 +163,11 @@ optgroup option {
   text-decoration: none;
   color: #888;   
   border-radius: 2px;
+  border-bottom: 1px dotted #ccc;
 }
 
 #details .sunting-linktambah:hover {
+  border-bottom: 1px solid #eee;
   background: #eee; /* Tetap pertahankan efek kotak abu-abu di sini */
 }
 

@@ -343,6 +343,7 @@ async function fetchWdqsRawWithRetry(query, maxRetry = 3) {
 // (bukan jumlah baris mentah — karena satu entitas bisa punya >1 baris akibat OPTIONAL tanggal ganda)
 async function queryWdqsPaginated(queryTemplate, processEachResult, postprocessCallback, chunkSize = 5000) {
   let offset = 0;
+  let halaman = 1;
 
   while (true) {
     let pagedQuery = queryTemplate.replace(
@@ -350,16 +351,36 @@ async function queryWdqsPaginated(queryTemplate, processEachResult, postprocessC
       `LIMIT ${chunkSize} OFFSET ${offset}`
     );
 
-    let bindings = await fetchWdqsRawWithRetry(pagedQuery);
+    // === LOG DEBUG 1: pastikan placeholder benar-benar ketemu dan tergantikan ===
+    console.log(`[Halaman ${halaman}] Offset: ${offset}`);
+    console.log(`[Halaman ${halaman}] Placeholder berhasil diganti?`, pagedQuery.includes('LIMIT ' + chunkSize));
+    console.log(`[Halaman ${halaman}] Query terkirim:`, pagedQuery);
+
+    let bindings;
+    try {
+      bindings = await fetchWdqsRawWithRetry(pagedQuery);
+    } catch (err) {
+      console.error(`[Halaman ${halaman}] GAGAL total:`, err);
+      throw err;
+    }
+
+    console.log(`[Halaman ${halaman}] Baris mentah diterima:`, bindings.length);
+
     bindings.forEach(processEachResult);
 
-    // KUNCI PERBAIKAN: hitung entitas UNIK di halaman ini, bukan jumlah baris mentah
     let entitasUnik = new Set(bindings.map(b => b.SQ.value)).size;
-    if (entitasUnik < chunkSize) break; // halaman terakhir
+    console.log(`[Halaman ${halaman}] Entitas unik (?SQ):`, entitasUnik);
+
+    if (entitasUnik < chunkSize) {
+      console.log(`[Halaman ${halaman}] STOP — dianggap halaman terakhir.`);
+      break;
+    }
 
     offset += chunkSize;
+    halaman++;
   }
 
+  console.log('SELESAI. Total Records terkumpul:', Object.keys(Records).length);
   if (postprocessCallback) postprocessCallback();
 }
 

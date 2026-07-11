@@ -86,8 +86,8 @@ function loadPrimaryData() {
        if (indexList) {         
          indexList.innerHTML = `
            <div style="padding: 40px 20px; text-align: center; line-height: 1.6;">
-             <h3 style="margin-bottom: 10px; margin-top:0; color: #cc0000;">Koneksi Terputus</h3>
-             <p style="color: #666; font-size:14px; margin-bottom: 25px;">Gagal mengambil data dari server Wikidata. Pastikan koneksi internet Anda stabil atau coba lagi nanti saat server tidak sibuk.</p>
+             <h3 style="margin-bottom: 10px; margin-top:0; color: #cc0000;">Gagal Menarik Data</h3>
+             <p style="color: #666; font-size:14px; margin-bottom: 25px;">Pastikan koneksi internet Anda stabil atau coba lagi nanti. Jika data gagal dimuat karena terlalu banyak (lebih dari 20.000), silahkan persempit pencarian.</p>
              <a href="#landing" style="background-color: #882222; color: #fff; font-size:11px; padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: 800; display: inline-block;">Kembali ke Beranda</a>
            </div>
          `;
@@ -273,9 +273,9 @@ function populateProvinceTypesData() {
     indexList.innerHTML = `
       <div style="padding: 40px 20px; text-align: center; line-height: 1.6;">
         <h3 id="loading-text" style="margin-bottom: 10px; margin-top:0; color: #333;">
-          Sedang Menarik Data<br/>${currentNamaKlaster} di ${currentNamaWilayah}...
+          Sedang Menarik Data<br/>${currentNamaKlaster} di ${currentNamaWilayah}
         </h3>
-        <p style="color: #666; font-size:14px; margin-bottom: 25px;">Mohon tunggu sebentar, Wikidata sedang mencari dan menyusun daftar entitas untuk Anda.</p>
+        <p style="color: #666; font-size:14px; margin-bottom: 25px;">Mohon menunggu. Lama proses bergantung pada banyaknya data. Jika terdapat lebih dari 5.000 data, proses penarikan akan dilakukan bertahap.</p>
         <div class="loader" style="margin: 0 auto; width: 40px; height: 40px; border-width: 4px;"></div>
       </div>
     `;

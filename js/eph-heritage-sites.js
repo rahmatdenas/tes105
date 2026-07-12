@@ -826,26 +826,32 @@ mapMarker.bindPopup(record.title, {
       // =======================================================
       
       // 1. Tandai marker secara diam-diam saat popup-nya terbuka
-      mapMarker.on('popupopen', function() {
-        // Jeda 50ms agar klik pertama tidak langsung memicu logika klik kedua
+ mapMarker.on('popupopen', function() {
         setTimeout(() => {
           this._popupSedangAktif = true;
         }, 50);
       });
 
-      // 2. Hapus tanda saat popup tertutup (karena klik tempat lain atau pindah marker)
+      // 2. KUNCI PERBAIKAN: Beri jeda sebelum menghapus tanda!
       mapMarker.on('popupclose', function() {
-        this._popupSedangAktif = false;
+        // Beri jeda 150ms agar event 'click' di bawah sempat membaca status ini
+        // sebelum benar-benar di-false-kan.
+        setTimeout(() => {
+          this._popupSedangAktif = false;
+        }, 150);
       });
 
       // 3. Logika utama saat marker diklik
       mapMarker.on('click', function() {
-        // Jika sensor mengatakan popup marker ini sedang terbuka...
+        // Karena ada jeda 150ms di atas, sensor ini masih bernilai TRUE saat diklik kedua!
         if (this._popupSedangAktif) {
           
           // ...maka ini PASTI klik kedua! Tarik panelnya:
+          // PENTING: Pastikan ini adalah fungsi asli Anda untuk menarik panel
           if (typeof window.setMobilePanelExpanded === 'function') {
             window.setMobilePanelExpanded(true);
+          } else {
+            console.warn("Peringatan: Fungsi setMobilePanelExpanded tidak ditemukan!");
           }
           
           // Lawan sifat asli Leaflet yang mencoba menutup popup di klik kedua

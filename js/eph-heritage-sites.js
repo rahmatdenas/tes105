@@ -814,44 +814,29 @@ function populateMapAndIndex() {
         [record.lat, record.lon],
         { icon: L.ExtraMarkers.icon({ icon: '', markerColor : 'orange-dark' }) }
       );
-record.mapMarker = mapMarker;
+      record.mapMarker = mapMarker;
       
-mapMarker.bindPopup(record.title, { 
+      mapMarker.bindPopup(record.title, { 
         closeButton: false,
-        maxWidth: 200,
-        togglePopup: false // <--- Wajib agar klik kedua tidak menutup popup
+        maxWidth: 200 
       });
 
       // =======================================================
-      // +++ LOGIKA KLIK KEDUA (BENDERA STATUS) +++
+      // +++ TAMBAHAN BARU: LOGIKA KLIK KEDUA (KHUSUS MOBILE) +++
       // =======================================================
-      
-      // 1. Saat popup tertutup karena klik tempat lain (Reset ke kondisi awal)
-      mapMarker.on('popupclose', function() {
-        this._sudahDiklikSekali = false;
-      });
-
-      // 2. Deteksi setiap klik pada marker
       mapMarker.on('click', function() {
-        
-        // Jika belum ada bendera (berarti ini KLIK PERTAMA)
-        if (!this._sudahDiklikSekali) {
-          // Pasang bendera agar sistem ingat.
-          // Mesin bawaan Leaflet akan otomatis membuka popup-nya di sini.
-          this._sudahDiklikSekali = true; 
-        } 
-        
-        // Jika bendera sudah ada (berarti ini KLIK KEDUA, KETIGA, dst)
-        else {
-          // A. Panggil data Wikipedia dan gambar
-          displayRecordDetails(qid); 
+        // Cek apakah hash URL saat ini sama persis dengan Q-ID marker ini.
+        // Jika sama, ini pasti klik kedua (atau klik saat popup sedang aktif).
+        if (window.location.hash === '#' + qid) {
           
-          // B. Panggil fungsi dari JS Responsif Anda untuk menarik panel ke atas
+          // 1. Tarik panel mobile ke atas (jika fungsi ini ada di JS utama Anda)
           if (typeof window.setMobilePanelExpanded === 'function') {
             window.setMobilePanelExpanded(true);
           }
+          
+          // 2. Cegah sifat asli Leaflet yang menutup popup jika diklik ganda
+          this.openPopup(); 
         }
-        
       });
       // =======================================================
 

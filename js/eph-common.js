@@ -45,8 +45,8 @@ const ikonTetesanAir = L.divIcon({
                     M 192, 132 a 60,60 0 1,0 0,120 a 60,60 0 1,0 0,-120 z"/>
          </svg>`,
   iconSize: [30, 40],
-  iconAnchor: [15, 40],   
-  popupAnchor: [0, -40]   
+  iconAnchor: [15, 39],   
+  popupAnchor: [0, -37]   
 });
 
 

@@ -1275,10 +1275,12 @@ let tautanSuntingRingkasan = `<a href="${wikiUrlUtama}" target="_blank" class="s
 // 1. Buat variabel untuk menampung logo utama
 let logoWikidataUtama = `<a class="main-wikidata-link" href="https://www.wikidata.org/wiki/${qid}" target="_blank" title="Lihat di Wikidata"><img src="img/wikidata_tiny_logo.png" alt="[Lihat item Wikidata]" /></a>`;
 
-let designationsHtml = `<h2 style="margin-top:10px"><span id="header-text-${qid}">Informasi</span> ${tautanSuntingRingkasan}</h2>`;
+let designationsHtml = `<h2 style="margin-top:10px">
+                          <span id="header-text-${qid}">Informasi</span> 
+                          ${tautanSuntingRingkasan}
+                          ${logoWikidataUtama}
+                       </h2>`;
 
-// 2. Suntikkan logo tersebut ke sini, sebelum <ul>
-designationsHtml += logoWikidataUtama;
 designationsHtml += '<ul class="designations">';
 
  // ==========================================

@@ -507,9 +507,10 @@ async function populateCoordinatesData() {
 }
 
 async function populateImageAndWikipediaData() {
-let daftarQid = Object.values(Records)
-  .sort((a, b) => a.indexTitle.localeCompare(b.indexTitle))
-  .map(record => 'wd:' + record.id);
+  let daftarQid = Object.values(Records)
+    .sort((a, b) => a.indexTitle.localeCompare(b.indexTitle))
+    .map(record => 'wd:' + record.id);
+  
   if (daftarQid.length === 0) return;
 
   let kelompokCicilan = potongJadiKelompok(daftarQid, 1000);
@@ -519,8 +520,10 @@ let daftarQid = Object.values(Records)
   let tiketPencarianIni = currentSearchToken;
   
   let totalData = daftarQid.length;
-if (btnImg) btnImg.classList.remove('disabled');
+
+  if (btnImg) btnImg.classList.remove('disabled');
   if (btnArt) btnArt.classList.remove('disabled');
+
   // =========================================================
   // FUNGSI PEMBANTU: Menarik 1 kloter (1.000 data) dengan aman
   // =========================================================
@@ -536,7 +539,7 @@ if (btnImg) btnImg.classList.remove('disabled');
     } catch (error) {
       // Jika dibatalkan user, lempar errornya agar proses utama berhenti
       if (error === 'ABORTED') throw error;
-      // Jika hanya gagal jaringan/timeout Wikidata, abaikan agar kloter lain tetap jalan!
+      // Jika hanya gagal jaringan/timeout Wikidata, abaikan agar kloter lain tetap jalan
       console.warn("1 kloter gambar/artikel gagal ditarik, sistem melanjutkan kloter lainnya...", error);
     }
   };
@@ -547,31 +550,24 @@ if (btnImg) btnImg.classList.remove('disabled');
       // SKENARIO A: Total <= 20.000 (FULL PARALEL)
       // Tembak semua kloter serentak dalam 1 waktu!
       // ========================================================
-      let chunksCompleted = 0;
       
-      let daftarJanji = kelompokCicilan.map(cicilan => {
-        return tarikSatuKloter(cicilan).then(() => {
-          if (currentSearchToken !== tiketPencarianIni) throw 'ABORTED';
-          
-          // 1. UPDATE TEKS SAJA DI SINI (Sangat ringan dan aman)
-          chunksCompleted++;
-          let persentase = Math.round((chunksCompleted / kelompokCicilan.length) * 100);
-if (btnImg) btnImg.textContent = `Gambar (${persentase}%)`;
-if (btnArt) btnArt.textContent = `Artikel (${persentase}%)`;
-        });
-      });
+      // Ubah teks tombol menjadi indikator memuat (tanpa persentase karena instan)
+      if (btnImg) btnImg.textContent = 'Memuat Gambar...';
+      if (btnArt) btnArt.textContent = 'Memuat Artikel...';
+
+      let daftarJanji = kelompokCicilan.map(cicilan => tarikSatuKloter(cicilan));
 
       // Tunggu SEMUA kloter paralel selesai menembak
       await Promise.all(daftarJanji);
 
       if (currentSearchToken !== tiketPencarianIni) throw 'ABORTED';
 
-      // 2. UPDATE PETA & DAFTAR CUKUP 1 KALI DI SINI (Anti-Ngelag)
-Object.values(Records).forEach(r => {
-  if (r.id !== currentDisplayedQid) {
-    r.panelElem = undefined;
-  }
-});
+      // UPDATE PETA & DAFTAR CUKUP 1 KALI DI SINI (Anti-Ngelag)
+      Object.values(Records).forEach(r => {
+        if (r.id !== currentDisplayedQid) {
+          r.panelElem = undefined;
+        }
+      });
       if (activeFeatures.has('image') || activeFeatures.has('article')) {
         applyIntersectionFilter(true); 
       }
@@ -592,17 +588,17 @@ Object.values(Records).forEach(r => {
         // Eksekusi maksimal 3 peluru bersamaan
         let daftarJanji = potonganBatch.map(cicilan => tarikSatuKloter(cicilan));
         
-        // Kunci di sini: Sistem AKAN BERHENTI MENUNGGU 3 kloter ini selesai
+        // Sistem menunggu 3 kloter ini selesai
         await Promise.all(daftarJanji);
 
         if (currentSearchToken !== tiketPencarianIni) break;
 
-        // Update Persentase
+        // Update Persentase (Pengecekan 'active' dihilangkan agar tetap update meski tombol dipilih)
         chunksCompleted += potonganBatch.length;
         let persentase = Math.round((chunksCompleted / kelompokCicilan.length) * 100);
         
-        if (btnImg && !btnImg.classList.contains('active')) btnImg.textContent = `Gambar (${persentase}%)`;
-        if (btnArt && !btnArt.classList.contains('active')) btnArt.textContent = `Artikel (${persentase}%)`;
+        if (btnImg) btnImg.textContent = `Gambar (${persentase}%)`;
+        if (btnArt) btnArt.textContent = `Artikel (${persentase}%)`;
 
         // Update Peta & Daftar HANYA setelah 1 batch (3 kloter) selesai
         Object.values(Records).forEach(r => r.panelElem = undefined);
@@ -625,8 +621,9 @@ Object.values(Records).forEach(r => {
   // ========================================================
   // KEMBALIKAN TEKS TOMBOL KE ASLINYA SETELAH 100% SELESAI
   // ========================================================
-  if (btnImg && !btnImg.classList.contains('active')) btnImg.textContent = 'Memiliki Gambar';
-  if (btnArt && !btnArt.classList.contains('active')) btnArt.textContent = 'Memiliki Artikel';
+  // Pengecekan 'active' dihilangkan agar tombol yg dipilih juga kembali teks aslinya
+  if (btnImg) btnImg.textContent = 'Memiliki Gambar';
+  if (btnArt) btnArt.textContent = 'Memiliki Artikel';
 }
 
 function populateImportantEventsData(qid) {

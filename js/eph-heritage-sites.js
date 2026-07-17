@@ -1173,10 +1173,6 @@ function updateFeatureCounts(totalValidRecords) {
   let btnAll = document.getElementById('btn-all');
   let btnImg = document.getElementById('btn-image') || document.querySelector('[data-filter="image"]');
   let btnArt = document.getElementById('btn-article') || document.querySelector('[data-filter="article"]');
-  
-  if (btnImg) btnImg.textContent = 'Memiliki Gambar';
-  if (btnArt) btnArt.textContent = 'Memiliki Artikel';
-
   let searchInput = document.getElementById('search-input');
   if (searchInput) {
     // === PERUBAHAN PLACEHOLDER SESUAI KLASTER ===

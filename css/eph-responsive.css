@@ -101,6 +101,7 @@ background-image: linear-gradient(to bottom, #9b0d0b, #550303);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     color: #bf9090;
+     display: block;
   }
 
   /* ---------- Branding & navigasi lebih ringkas ---------- */

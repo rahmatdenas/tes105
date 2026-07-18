@@ -557,7 +557,6 @@ async function fetchWdqsRawWithRetry(query, maxRetry = 3, offsetLabel = '', sign
       }
 
       if (attempt === maxRetry) {
-        let tiketSaatIni = currentSearchToken;
         await new Promise(r => setTimeout(r, 400));
         if (currentSearchToken !== tiketSaatIni) throw 'ABORTED'; 
         throw error;

@@ -894,21 +894,23 @@ function generateFilterSelect() {
     });
 
     if (selectKombinasi) {
-      selectKombinasi.addEventListener('change', function() {
-        let pilihan = this.value;
-        currentUsiaFilter = 'all'; 
+   selectKombinasi.addEventListener('change', function() {
+  let pilihan = this.value;
+  currentUsiaFilter = 'all'; 
 
-        if (pilihan === 'filter-usia-50') {
-          currentUsiaFilter = 'usia_50'; 
-        } else if (pilihan === 'filter-usia-100') {
-          currentUsiaFilter = 'usia_100'; 
-        } else if (pilihan === 'filter-usia-200') {
-          currentUsiaFilter = 'usia_200'; 
-        } else if (pilihan === 'filter-usia-300') {
-          currentUsiaFilter = 'usia_300'; 
-        }
-        applyIntersectionFilter();
-      });
+  if (pilihan === 'filter-usia-muda-50') {
+    currentUsiaFilter = 'muda_50';          // BARU
+  } else if (pilihan === 'filter-usia-50') {
+    currentUsiaFilter = 'usia_50'; 
+  } else if (pilihan === 'filter-usia-100') {
+    currentUsiaFilter = 'usia_100'; 
+  } else if (pilihan === 'filter-usia-200') {
+    currentUsiaFilter = 'usia_200'; 
+  } else if (pilihan === 'filter-usia-300') {
+    currentUsiaFilter = 'usia_300'; 
+  }
+  applyIntersectionFilter();
+});
     }
 
     if (btnAll) {
@@ -1046,23 +1048,28 @@ function applyIntersectionFilter(preventZoom = false) {
       }
     }
 
-    let matchUsia = true;
-    if (currentUsiaFilter.startsWith('usia_')) {
-      if (record.rawTahunBerdiri) {
-        let tahunBangunan = parseInt(record.rawTahunBerdiri.substring(0, 4));
-        let batasUmur = parseInt(currentUsiaFilter.split('_')[1]); 
-        let batasTahun = new Date().getFullYear() - batasUmur;
-        
-        matchUsia = tahunBangunan <= batasTahun;
-      } else {
-        matchUsia = false; 
-      }
+  let matchUsia = true;
+if (currentUsiaFilter !== 'all') {                 // ganti dari .startsWith('usia_')
+  if (record.rawTahunBerdiri) {
+    let tahunBangunan = parseInt(record.rawTahunBerdiri.substring(0, 4));
+    let [tipeFilter, umurStr] = currentUsiaFilter.split('_');
+    let batasUmur = parseInt(umurStr);
+    let batasTahun = new Date().getFullYear() - batasUmur;
+
+    if (tipeFilter === 'muda') {
+      matchUsia = tahunBangunan > batasTahun;      // lebih muda dari X tahun
+    } else {
+      matchUsia = tahunBangunan <= batasTahun;     // perilaku lama: lebih tua dari X tahun
     }
+  } else {
+    matchUsia = false; 
+  }
+}
     
     return matchRegion && matchFeature && matchSearch && matchUsia;
 
   }).sort((a, b) => {
-    if (currentUsiaFilter.startsWith('usia_')) {
+    if (currentUsiaFilter !== 'all') {
       let aHasYear = !!a.rawTahunBerdiri;
       let bHasYear = !!b.rawTahunBerdiri;
 
